@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maths Challenge - Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-game">
+
+    <div class="game-container">
+
+        <h1>Game Settings</h1>
+        <p class="subtitle">Choose how you want to play</p>
+
+        <!-- GAME MODE -->
+        <div class="section">
+            <h2>Game Mode</h2>
+            <select id="game-mode">
+                <option value="input">Input Answer</option>
+                <option value="multiple">Multiple Choice</option>
+            </select>
+        </div>
+
+        <!-- OPERATION TYPE -->
+        <div class="section">
+            <h2>Operation</h2>
+            <select id="operation">
+                <option value="addition">Addition</option>
+                <option value="subtraction">Subtraction</option>
+                <option value="multiplication">Multiplication</option>
+                <option value="division">Division</option>
+                <option value="mixed">Mixed</option>
+            </select>
+        </div>
+
+        <!-- DIFFICULTY -->
+        <div class="section">
+            <h2>Difficulty</h2>
+            <select id="difficulty">
+                <option value="easy">Easy (1–20)</option>
+                <option value="medium">Medium (1–60)</option>
+                <option value="hard">Hard (1–150)</option>
+            </select>
+        </div>
+
+        <!-- START BUTTON -->
+        <button class="menu-btn special" onclick="startGame()">
+            Start Game ▶
+        </button>
+
+        <!-- BACK TO HOME -->
+        <button class="menu-btn" onclick="location.href='index.html'">
+            ⬅ Back to Home
+        </button>
+
+    </div>
+
+    <script>
+        function startGame() {
+            const mode = document.getElementById("game-mode").value;
+            const op = document.getElementById("operation").value;
+            const diff = document.getElementById("difficulty").value;
+
+            // átirányítás a játék oldalra paraméterekkel
+            const url = `play.html?mode=${mode}&op=${op}&diff=${diff}`;
+            location.href = url;
+        }
+    </script>
+
+</body>
+</html>

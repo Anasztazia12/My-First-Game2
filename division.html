@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Division Practice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-operations">
+
+
+    <div class="game-container">
+        <h1>Division Practice</h1>
+        <p class="subtitle">Choose difficulty and start!</p>
+
+        <select id="difficulty">
+            <option value="easy">Easy (1–20)</option>
+            <option value="medium">Medium (1–60)</option>
+            <option value="hard">Hard (1–150)</option>
+        </select>
+
+        <button class="menu-btn special" onclick="startDivision()">Start ▶</button>
+        <button class="menu-btn" onclick="location.href='index.html'">⬅ Back</button>
+    </div>
+
+    <script>
+        function startDivision() {
+            const diff = document.getElementById("difficulty").value;
+            location.href = `play.html?mode=input&op=division&diff=${diff}`;
+        }
+    </script>
+
+</body>
+</html>
