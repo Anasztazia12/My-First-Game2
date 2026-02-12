@@ -3,6 +3,9 @@ let weeklyProgress = JSON.parse(localStorage.getItem("weeklyProgress")) || {
     tasks: [false, false, false, false, false],
     completedCount: 0
 };
+// ALWAYS recalc completedCount from tasks
+weeklyProgress.completedCount = weeklyProgress.tasks.filter(t => t).length;
+localStorage.setItem("weeklyProgress", JSON.stringify(weeklyProgress));
 
 // DOM elements
 const taskEls = [
