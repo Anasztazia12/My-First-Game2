@@ -1,3 +1,7 @@
+/* ============================
+   BACKGROUNDS
+   ============================ */
+
 body.bg-home {
     background: url("pophunters.png") no-repeat center center fixed;
     background-size: cover;
@@ -18,7 +22,6 @@ body.bg-operations {
     background-size: cover;
 }
 
-
 /* ============================
    GLOBAL BODY SETTINGS
    ============================ */
@@ -32,7 +35,7 @@ body {
     align-items: center;
 }
 
-/* Dark overlay for readability */
+/* Dark overlay */
 body::after {
     content: "";
     position: fixed;
@@ -73,13 +76,6 @@ h1 {
    MENU BUTTONS
    ============================ */
 
-.menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-}
-
 .menu-btn {
     padding: 10px 18px;
     border-radius: 20px;
@@ -90,6 +86,7 @@ h1 {
     cursor: pointer;
     box-shadow: 0 0 10px #ff00cc;
     transition: 0.2s;
+    margin-top: 10px;
 }
 
 .menu-btn:hover {
@@ -98,29 +95,8 @@ h1 {
 }
 
 .menu-btn.special {
-    margin-top: 10px;
     background: linear-gradient(90deg, #ffd700, #ff8c00);
     box-shadow: 0 0 15px #ffd700;
-}
-
-/* ============================
-   MOBILE RESPONSIVE
-   ============================ */
-
-@media (max-width: 480px) {
-    .game-container {
-        padding: 20px;
-        width: 90vw;
-    }
-
-    h1 {
-        font-size: 22px;
-    }
-
-    .menu-btn {
-        font-size: 13px;
-        padding: 9px 16px;
-    }
 }
 
 /* ============================
@@ -162,6 +138,19 @@ select:focus {
     opacity: 0.9;
 }
 
+#answer-input {
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #ff00cc;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 18px;
+    text-align: center;
+    width: 80%;
+    margin: 10px auto;
+    display: block;
+}
+
 .choice-btn {
     padding: 10px;
     width: 90%;
@@ -181,15 +170,6 @@ select:focus {
     box-shadow: 0 0 20px #ff00cc;
 }
 
-#end-screen h2 {
-    margin-bottom: 10px;
-}
-
-#end-screen p {
-    font-size: 18px;
-    margin-bottom: 20px;
-}
-
 /* ============================
    WEEKLY CHALLENGE
    ============================ */
@@ -199,17 +179,24 @@ select:focus {
     text-align: center;
 }
 
-.weekly-list p {
-    margin: 5px 0;
-    font-size: 14px;
+#weekly-progress {
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: bold;
 }
 
+/* Trophy popup (hidden by default) */
 #trophy-popup {
+    display: none;
     margin-top: 20px;
     padding: 15px;
     background: rgba(255,255,255,0.2);
     border-radius: 15px;
     box-shadow: 0 0 15px gold;
+}
+
+#trophy-popup.show {
+    display: block;
 }
 
 #trophy {
@@ -228,28 +215,23 @@ select:focus {
     height: 8px;
     opacity: 0.9;
     border-radius: 2px;
-    animation-name: fall;
-    animation-timing-function: linear;
+    animation: fall linear forwards;
 }
 
 @keyframes fall {
-    to {
-        transform: translateY(110vh) rotate(360deg);
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    100% {
+        transform: translateY(120vh) rotate(360deg);
         opacity: 0;
     }
 }
-#answer-input {
-    color: white;
-    background: rgba(0, 0, 0, 0.4);
-    border: 2px solid #ff00cc;
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 18px;
-    text-align: center;
-    width: 80%;
-    margin: 10px auto;
-    display: block;
-}
+
+/* ============================
+   MULTIPLE / INPUT CONTAINERS
+   ============================ */
+
 #input-container {
     display: block;
 }
