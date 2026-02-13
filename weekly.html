@@ -12,7 +12,10 @@
     <div class="game-container">
 
         <h1>Weekly Challenge</h1>
-        <p class="subtitle">Complete all 5 tasks to earn the trophy!</p>
+        <p class="subtitle">Complete 5 daily tasks to earn the trophy!</p>
+
+        <!-- Weekly progress -->
+        <p id="weekly-progress" class="subtitle">Weekly progress: 0/5</p>
 
         <!-- Pentagon Progress -->
         <div id="pentagon-container">
@@ -32,13 +35,13 @@
             </svg>
         </div>
 
-        <!-- Task list -->
-        <div class="weekly-list">
-            <p id="task1">Task 1: ❌ Not completed</p>
-            <p id="task2">Task 2: ❌ Not completed</p>
-            <p id="task3">Task 3: ❌ Not completed</p>
-            <p id="task4">Task 4: ❌ Not completed</p>
-            <p id="task5">Task 5: ❌ Not completed</p>
+        <!-- Game mode -->
+        <div class="section">
+            <h2>Game Mode</h2>
+            <select id="weekly-mode">
+                <option value="input">Input Answer</option>
+                <option value="multiple">Multiple Choice</option>
+            </select>
         </div>
 
         <!-- Difficulty -->

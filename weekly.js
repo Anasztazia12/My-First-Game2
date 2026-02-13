@@ -1,83 +1,60 @@
-// Load saved progress
+// Load saved weekly progress
 let weeklyProgress = JSON.parse(localStorage.getItem("weeklyProgress")) || {
-    tasks: [false, false, false, false, false],
-    completedCount: 0
+    completed: 0   // 0–5
 };
-// ALWAYS recalc completedCount from tasks
-weeklyProgress.completedCount = weeklyProgress.tasks.filter(t => t).length;
-localStorage.setItem("weeklyProgress", JSON.stringify(weeklyProgress));
 
 // DOM elements
-const taskEls = [
-    document.getElementById("task1"),
-    document.getElementById("task2"),
-    document.getElementById("task3"),
-    document.getElementById("task4"),
-    document.getElementById("task5")
-];
-
+const progressText = document.getElementById("weekly-progress");
 const pentagonProgress = document.getElementById("pentagon-progress");
 const trophyPopup = document.getElementById("trophy-popup");
 
-// Pentagon points (in order)
+// Pentagon points (5 sides)
 const pentagonPoints = [
     [100, 20],
     [180, 75],
     [150, 160],
     [50, 160],
     [20, 75],
-    [100, 20] // back to start
+    [100, 20] // close shape
 ];
 
 // Update UI on load
-updateTaskList();
-updatePentagon();
+updateProgressUI();
 
-// Update task list text
-function updateTaskList() {
-    for (let i = 0; i < 5; i++) {
-        if (weeklyProgress.tasks[i]) {
-            taskEls[i].innerText = `Task ${i + 1}: ✔ Completed`;
-            taskEls[i].style.color = "#00ff7f";
-        } else {
-            taskEls[i].innerText = `Task ${i + 1}: ❌ Not completed`;
-            taskEls[i].style.color = "#ff4444";
-        }
-    }
-}
+// Update progress text + pentagon + trophy
+function updateProgressUI() {
+    const completed = weeklyProgress.completed;
 
-// Draw pentagon progress line
-function updatePentagon() {
-    let completed = weeklyProgress.completedCount;
+    // Update text
+    progressText.innerText = `Weekly progress: ${completed}/5`;
 
+    // Draw pentagon progress
     if (completed === 0) {
         pentagonProgress.setAttribute("points", "");
-        return;
+    } else {
+        let points = "";
+        for (let i = 0; i <= completed; i++) {
+            points += `${pentagonPoints[i][0]},${pentagonPoints[i][1]} `;
+        }
+        pentagonProgress.setAttribute("points", points.trim());
     }
 
-    let points = "";
-    for (let i = 0; i <= completed; i++) {
-        points += pentagonPoints[i][0] + "," + pentagonPoints[i][1] + " ";
-    }
-
-    pentagonProgress.setAttribute("points", points.trim());
-
+    // Show trophy only when fully completed
     if (completed === 5) {
         showTrophy();
     }
 }
 
-// Show trophy popup
+// Show trophy + confetti
 function showTrophy() {
     trophyPopup.classList.remove("hidden");
 
-    // Confetti effect
     for (let i = 0; i < 50; i++) {
         createConfetti();
     }
 }
 
-// Simple confetti animation
+// Confetti animation
 function createConfetti() {
     const confetti = document.createElement("div");
     confetti.classList.add("confetti");
@@ -98,37 +75,40 @@ function createConfetti() {
 
 // Start today's challenge
 function startWeeklyTask() {
-    let nextTaskIndex = weeklyProgress.tasks.indexOf(false);
-
-    if (nextTaskIndex === -1) {
+    if (weeklyProgress.completed >= 5) {
         alert("You already completed all 5 tasks this week!");
         return;
     }
 
+    const mode = document.getElementById("weekly-mode").value;
     const diff = document.getElementById("weekly-difficulty").value;
     const op = document.getElementById("weekly-operation").value;
 
-    // Save which task is being played
-    localStorage.setItem("currentWeeklyTask", nextTaskIndex);
+    // Save that we are doing a weekly task
+    localStorage.setItem("doingWeekly", "1");
 
-    // Start the challenge (always mixed mode: input + multiple)
-    location.href = `play.html?mode=multiple&op=${op}&diff=${diff}&weekly=1`;
+    // Start game
+    location.href = `play.html?mode=${mode}&op=${op}&diff=${diff}&weekly=1`;
 }
 
-// When returning from play.html, mark task as completed
+// When returning from play.html
 window.addEventListener("load", () => {
     const urlParams = new URLSearchParams(window.location.search);
 
     if (urlParams.get("weeklyComplete") === "1") {
-        const taskIndex = Number(localStorage.getItem("currentWeeklyTask"));
+        if (localStorage.getItem("doingWeekly") === "1") {
 
-        if (!weeklyProgress.tasks[taskIndex]) {
-            weeklyProgress.tasks[taskIndex] = true;
-            weeklyProgress.completedCount++;
+            // Add 1 progress
+            if (weeklyProgress.completed < 5) {
+                weeklyProgress.completed++;
+            }
+
+            // Save
             localStorage.setItem("weeklyProgress", JSON.stringify(weeklyProgress));
-        }
+            localStorage.removeItem("doingWeekly");
 
-        updateTaskList();
-        updatePentagon();
+            // Update UI
+            updateProgressUI();
+        }
     }
 });
