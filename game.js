@@ -1,29 +1,156 @@
-// Read URL parameters FIRST
+
+// Read URL parameters
 const urlParams = new URLSearchParams(window.location.search);
-const mode = urlParams.get("mode");      // input or multiple
-const operation = urlParams.get("op");   // addition, subtraction, etc.
-const difficulty = urlParams.get("diff"); // easy, medium, hard
+const mode = urlParams.get("mode");        // input or multiple
+const op = urlParams.get("op");            // addition, subtraction, etc.
+const diff = urlParams.get("diff");        // easy, medium, hard
 
 // DOM elements
+const questionEl = document.getElementById("question");
+const counterEl = document.getElementById("counter");
+
 const inputContainer = document.getElementById("input-container");
 const multipleContainer = document.getElementById("multiple-container");
 
-const questionEl = document.getElementById("question");
-const counterEl = document.getElementById("counter");
-const resultEl = document.getElementById("result");
 const answerInput = document.getElementById("answer-input");
-const choice1 = document.getElementById("choice1");
-const choice2 = document.getElementById("choice2");
-const choice3 = document.getElementById("choice3");
-const submitBtn = document.getElementById("submit-btn");
+const choiceButtons = document.querySelectorAll(".choice-btn");
+
+const okBtn = document.getElementById("ok-btn");
 const endScreen = document.getElementById("end-screen");
-const finalScoreEl = document.getElementById("final-score");
 
 // Sounds
 const correctSound = document.getElementById("correct-sound");
 const wrongSound = document.getElementById("wrong-sound");
 
-// Switch UI based on mode
+// Game state
+let currentQuestion = 0;
+let correctAnswer = 0;
+
+// Difficulty ranges
+const ranges = {
+    easy: 20,
+    medium: 60,
+    hard: 150
+};
+
+// Generate a random number
+function rand(max) {
+    return Math.floor(Math.random() * max) + 1;
+}
+
+// Generate a new question
+function generateQuestion() {
+    currentQuestion++;
+
+    if (currentQuestion > 20) {
+        showEndScreen();
+        return;
+    }
+
+    counterEl.innerText = `Question ${currentQuestion} / 20`;
+
+    let a = rand(ranges[diff]);
+    let b = rand(ranges[diff]);
+
+    switch (op) {
+        case "addition":
+            correctAnswer = a + b;
+            questionEl.innerText = `${a} + ${b} = ?`;
+            break;
+        case "subtraction":
+            correctAnswer = a - b;
+            questionEl.innerText = `${a} - ${b} = ?`;
+            break;
+        case "multiplication":
+            correctAnswer = a * b;
+            questionEl.innerText = `${a} × ${b} = ?`;
+            break;
+        case "division":
+            correctAnswer = a;
+            let product = a * b;
+            questionEl.innerText = `${product} ÷ ${b} = ?`;
+            break;
+        case "mixed":
+            const ops = ["+", "-", "×", "÷"];
+            const pick = ops[Math.floor(Math.random() * 4)];
+
+            if (pick === "+") {
+                correctAnswer = a + b;
+                questionEl.innerText = `${a} + ${b} = ?`;
+            }
+            if (pick === "-") {
+                correctAnswer = a - b;
+                questionEl.innerText = `${a} - ${b} = ?`;
+            }
+            if (pick === "×") {
+                correctAnswer = a * b;
+                questionEl.innerText = `${a} × ${b} = ?`;
+            }
+            if (pick === "÷") {
+                correctAnswer = a;
+                let product2 = a * b;
+                questionEl.innerText = `${product2} ÷ ${b} = ?`;
+            }
+            break;
+    }
+
+    if (mode === "multiple") {
+        setupMultipleChoice();
+    }
+}
+
+// Setup multiple choice answers
+function setupMultipleChoice() {
+    let answers = [correctAnswer];
+
+    while (answers.length < 3) {
+        let wrong = correctAnswer + Math.floor(Math.random() * 10) - 5;
+        if (wrong !== correctAnswer && wrong >= 0) answers.push(wrong);
+    }
+
+    answers.sort(() => Math.random() - 0.5);
+
+    choiceButtons.forEach((btn, i) => {
+        btn.innerText = answers[i];
+        btn.onclick = () => checkAnswer(answers[i]);
+    });
+}
+
+// Check answer
+function checkAnswer(value) {
+    if (mode === "input") {
+        value = Number(answerInput.value);
+    }
+
+    if (value === correctAnswer) {
+        correctSound.play();
+    } else {
+        wrongSound.play();
+    }
+
+    answerInput.value = "";
+
+    generateQuestion();
+}
+
+// Show end screen
+function showEndScreen() {
+    document.querySelector(".game-container").innerHTML = `
+        <h2>Done!</h2>
+        <p>You finished all 20 questions!</p>
+        <button class="menu-btn" onclick="location.href='game.html'">Play Again</button>
+        <button class="menu-btn" onclick="location.href='index.html'">Back to Home</button>
+    `;
+}
+
+// OK button for input mode
+okBtn.onclick = () => {
+    if (mode === "input") {
+        checkAnswer(Number(answerInput.value));
+    }
+};
+
+// INITIAL SETUP
 if (mode === "multiple") {
     inputContainer.style.display = "none";
     multipleContainer.style.display = "block";
@@ -32,179 +159,4 @@ if (mode === "multiple") {
     multipleContainer.style.display = "none";
 }
 
-let currentQuestion = 1;
-let score = 0;
-let correctAnswer = 0;
-
-// Difficulty ranges
-function getMaxNumber() {
-    if (difficulty === "easy") return 20;
-    if (difficulty === "medium") return 60;
-    return 150; // hard
-}
-
-// Generate numbers based on difficulty
-function generateNumbers() {
-    const max = getMaxNumber();
-    const num1 = Math.floor(Math.random() * max) + 1;
-    const num2 = Math.floor(Math.random() * max) + 1;
-    return [num1, num2];
-}
-
-// Generate a question
-function generateQuestion() {
-    resultEl.innerText = "";
-    answerInput.value = "";
-
-    counterEl.innerText = `Question ${currentQuestion} / 20`;
-
-    let [num1, num2] = generateNumbers();
-    let opSymbol = "+";
-
-    if (operation === "addition") {
-        correctAnswer = num1 + num2;
-        opSymbol = "+";
-    }
-    else if (operation === "subtraction") {
-        const a = Math.max(num1, num2);
-        const b = Math.min(num1, num2);
-        correctAnswer = a - b;
-        num1 = a;
-        num2 = b;
-        opSymbol = "-";
-    }
-    else if (operation === "multiplication") {
-        correctAnswer = num1 * num2;
-        opSymbol = "×";
-    }
-    else if (operation === "division") {
-        num2 = Math.floor(Math.random() * 12) + 1;
-        const multiplier = Math.floor(Math.random() * 12) + 1;
-        num1 = num2 * multiplier;
-        correctAnswer = num1 / num2;
-        opSymbol = "÷";
-    }
-    else if (operation === "mixed") {
-        const ops = ["+", "-", "×", "÷"];
-        opSymbol = ops[Math.floor(Math.random() * ops.length)];
-
-        if (opSymbol === "+") correctAnswer = num1 + num2;
-        if (opSymbol === "-") {
-            const a = Math.max(num1, num2);
-            const b = Math.min(num1, num2);
-            correctAnswer = a - b;
-            num1 = a;
-            num2 = b;
-        }
-        if (opSymbol === "×") correctAnswer = num1 * num2;
-        if (opSymbol === "÷") {
-            num2 = Math.floor(Math.random() * 12) + 1;
-            const multiplier = Math.floor(Math.random() * 12) + 1;
-            num1 = num2 * multiplier;
-            correctAnswer = num1 / num2;
-        }
-    }
-
-    questionEl.innerText = `${num1} ${opSymbol} ${num2} = ?`;
-
-    if (mode === "multiple") {
-        setupMultipleChoice();
-    }
-}
-
-// Multiple choice setup
-function setupMultipleChoice() {
-    answerInput.style.display = "none";
-    submitBtn.style.display = "none";
-
-    const wrong1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-    const wrong2 = correctAnswer - (Math.floor(Math.random() * 5) + 1);
-
-    let answers = [correctAnswer, wrong1, wrong2];
-    answers.sort(() => Math.random() - 0.5);
-
-    choice1.innerText = answers[0];
-    choice2.innerText = answers[1];
-    choice3.innerText = answers[2];
-}
-
-// Check input mode answer
-function checkInputAnswer() {
-    const userAnswer = Number(answerInput.value);
-    if (answerInput.value === "") return;
-
-    if (userAnswer === correctAnswer) {
-        score++;
-        resultEl.innerText = "Correct!";
-        resultEl.style.color = "#00ff7f";
-        correctSound.play();
-    } else {
-        resultEl.innerText = `Wrong! Correct answer: ${correctAnswer}`;
-        resultEl.style.color = "#ff4444";
-        wrongSound.play();
-    }
-
-    nextQuestion();
-}
-
-// Check multiple choice answer
-function checkChoiceAnswer(value) {
-    if (Number(value) === correctAnswer) {
-        score++;
-        resultEl.innerText = "Correct!";
-        resultEl.style.color = "#00ff7f";
-        correctSound.play();
-    } else {
-        resultEl.innerText = `Wrong! Correct answer: ${correctAnswer}`;
-        resultEl.style.color = "#ff4444";
-        wrongSound.play();
-    }
-
-    nextQuestion();
-}
-
-// Move to next question
-function nextQuestion() {
-    currentQuestion++;
-
-    if (currentQuestion > 20) {
-        endGame();
-    } else {
-        setTimeout(generateQuestion, 700);
-    }
-}
-
-// End game
-function endGame() {
-    questionEl.classList.add("hidden");
-    answerInput.classList.add("hidden");
-    choice1.classList.add("hidden");
-    choice2.classList.add("hidden");
-    choice3.classList.add("hidden");
-    submitBtn.classList.add("hidden");
-    counterEl.classList.add("hidden");
-    resultEl.classList.add("hidden");
-
-    endScreen.classList.remove("hidden");
-    finalScoreEl.innerText = `You scored ${score} out of 20!`;
-
-    if (urlParams.get("weekly") === "1") {
-        setTimeout(() => {
-            location.href = "weekly.html?weeklyComplete=1";
-        }, 2000);
-    }
-}
-
-// Event listeners
-submitBtn.addEventListener("click", checkInputAnswer);
-
-answerInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") checkInputAnswer();
-});
-
-choice1.addEventListener("click", () => checkChoiceAnswer(choice1.innerText));
-choice2.addEventListener("click", () => checkChoiceAnswer(choice2.innerText));
-choice3.addEventListener("click", () => checkChoiceAnswer(choice3.innerText));
-
-// Start game
 generateQuestion();

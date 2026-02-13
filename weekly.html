@@ -1,90 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Challenge</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+// Load weekly progress from localStorage
+let weeklyProgress = JSON.parse(localStorage.getItem("weeklyProgress")) || {
+    completed: 0
+};
 
-<body class="bg-weekly">
+// DOM elements
+const progressText = document.getElementById("weekly-progress");
+const pentagonProgress = document.getElementById("pentagon-progress");
+const trophyPopup = document.getElementById("trophy-popup");
 
-    <div class="game-container">
+// Pentagon points (5 edges)
+const pentagonEdges = [
+    "100,20 180,75",   // top → right‑top
+    "180,75 150,160",  // right‑top → right‑bottom
+    "150,160 50,160",  // right‑bottom → left‑bottom
+    "50,160 20,75",    // left‑bottom → left‑top
+    "20,75 100,20"     // left‑top → top
+];
 
-        <h1>Weekly Challenge</h1>
-        <p class="subtitle">Complete 5 daily tasks to earn the trophy!</p>
+// Update progress text
+function updateProgressText() {
+    progressText.innerText = `Weekly progress: ${weeklyProgress.completed}/5`;
+}
 
-        <!-- Weekly progress -->
-        <p id="weekly-progress" class="subtitle">Weekly progress: 0/5</p>
+// Draw pentagon progress lines
+function updatePentagon() {
+    let lines = pentagonEdges.slice(0, weeklyProgress.completed);
+    pentagonProgress.setAttribute("points", lines.join(" "));
+}
 
-        <!-- Pentagon Progress -->
-        <div id="pentagon-container">
-            <svg id="pentagon" width="200" height="200" viewBox="0 0 200 200">
-                <polygon id="pentagon-outline"
-                    points="100,20 180,75 150,160 50,160 20,75"
-                    stroke="#ffffff"
-                    stroke-width="4"
-                    fill="none"
-                />
-                <polyline id="pentagon-progress"
-                    points=""
-                    stroke="#ffd700"
-                    stroke-width="6"
-                    fill="none"
-                />
-            </svg>
-        </div>
+// Save progress
+function saveProgress() {
+    localStorage.setItem("weeklyProgress", JSON.stringify(weeklyProgress));
+}
 
-        <!-- Game mode -->
-        <div class="section">
-            <h2>Game Mode</h2>
-            <select id="weekly-mode">
-                <option value="input">Input Answer</option>
-                <option value="multiple">Multiple Choice</option>
-            </select>
-        </div>
+// Start today's challenge
+function startWeeklyTask() {
+    const mode = document.getElementById("weekly-mode").value;
+    const diff = document.getElementById("weekly-difficulty").value;
+    const op = document.getElementById("weekly-operation").value;
 
-        <!-- Difficulty -->
-        <div class="section">
-            <h2>Difficulty</h2>
-            <select id="weekly-difficulty">
-                <option value="easy">Easy (1–20)</option>
-                <option value="medium">Medium (1–60)</option>
-                <option value="hard">Hard (1–150)</option>
-            </select>
-        </div>
+    // Redirect to play.html with parameters
+    location.href = `play.html?mode=${mode}&op=${op}&diff=${diff}&weekly=1`;
+}
 
-        <!-- Operation -->
-        <div class="section">
-            <h2>Operation</h2>
-            <select id="weekly-operation">
-                <option value="addition">Addition</option>
-                <option value="subtraction">Subtraction</option>
-                <option value="multiplication">Multiplication</option>
-                <option value="division">Division</option>
-                <option value="mixed">Mixed</option>
-            </select>
-        </div>
+// Called from play.html when a daily challenge is completed
+function completeDailyTask() {
+    if (weeklyProgress.completed < 5) {
+        weeklyProgress.completed++;
+        saveProgress();
+        updateProgressText();
+        updatePentagon();
+    }
 
-        <!-- Start button -->
-        <button class="menu-btn special" onclick="startWeeklyTask()">
-            Start Today's Challenge ▶
-        </button>
+    if (weeklyProgress.completed === 5) {
+        showTrophy();
+    }
+}
 
-        <!-- Back -->
-        <button class="menu-btn" onclick="location.href='index.html'">
-            ⬅ Back to Home
-        </button>
+// Show trophy popup + confetti
+function showTrophy() {
+    trophyPopup.classList.add("show");
+    launchConfetti();
+}
 
-        <!-- Trophy popup -->
-        <div id="trophy-popup" class="hidden">
-            <h2>Congratulations!</h2>
-            <p>You completed all 5 weekly tasks!</p>
-            <div id="trophy">🏆</div>
-        </div>
+// Confetti animation
+function launchConfetti() {
+    for (let i = 0; i < 40; i++) {
+        let conf = document.createElement("div");
+        conf.classList.add("confetti");
 
-    </div>
+        conf.style.left = Math.random() * 100 + "vw";
+        conf.style.backgroundColor = ["#ff0", "#0f0", "#0ff", "#f0f"][Math.floor(Math.random() * 4)];
+        conf.style.animationDuration = (2 + Math.random() * 3) + "s";
 
-    <script src="weekly.js"></script>
-</body>
-</html>
+        document.body.appendChild(conf);
+
+        setTimeout(() => conf.remove(), 5000);
+    }
+}
+
+// INITIAL LOAD
+updateProgressText();
+updatePentagon();
+
+// If weeklyProgress.completed === 5 → show trophy
+if (weeklyProgress.completed === 5) {
+    showTrophy();
+}

@@ -19,34 +19,30 @@
         <!-- Question text -->
         <p id="question">Loading...</p>
 
-      <!-- INPUT MODE CONTAINER -->
-<div id="input-container">
-    <input type="number" id="answer-input" placeholder="Type your answer">
-    <button id="submit-btn">OK</button>
-</div>
+        <!-- INPUT MODE -->
+        <div id="input-container">
+            <input type="number" id="answer-input" placeholder="Type your answer">
+            <button id="ok-btn">OK</button>
+        </div>
 
-<!-- MULTIPLE CHOICE CONTAINER -->
- <div id="multiple-container">
-    <button class="choice-btn" id="choice1"></button>
-    <button class="choice-btn" id="choice2"></button>
-    <button class="choice-btn" id="choice3"></button>
-</div>
-
-        <!-- Submit button -->
-        <button id="submit-btn">OK</button>
-
-        <!-- Result feedback -->
-        <p id="result"></p>
+        <!-- MULTIPLE CHOICE MODE -->
+        <div id="multiple-container">
+            <button class="choice-btn" id="choice1"></button>
+            <button class="choice-btn" id="choice2"></button>
+            <button class="choice-btn" id="choice3"></button>
+        </div>
 
         <!-- End screen -->
         <div id="end-screen" class="hidden">
-            <h2>Game Over!</h2>
-            <p id="final-score"></p>
+            <h2>Done!</h2>
+            <p>You finished all 20 questions!</p>
             <button class="menu-btn" onclick="location.href='game.html'">Play Again</button>
             <button class="menu-btn" onclick="location.href='index.html'">Back to Home</button>
         </div>
 
     </div>
+
+    <!-- Sounds -->
     <audio id="correct-sound" src="correct.mp3"></audio>
     <audio id="wrong-sound" src="wrong.mp3"></audio>
 
