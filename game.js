@@ -1,26 +1,17 @@
-const inputContainer = document.getElementById("input-container");
-const multipleContainer = document.getElementById("multiple-container");
-//Switch UI based on mode
-if (mode === "multiple") {
-    inputContainer.style.display = "none";
-    multipleContainer.style.display = "block";
-} else {
-    inputContainer.style.display = "block";
-    multipleContainer.style.display = "none";
-}
-
-// Read URL parameters
+// Read URL parameters FIRST
 const urlParams = new URLSearchParams(window.location.search);
 const mode = urlParams.get("mode");      // input or multiple
 const operation = urlParams.get("op");   // addition, subtraction, etc.
 const difficulty = urlParams.get("diff"); // easy, medium, hard
 
 // DOM elements
+const inputContainer = document.getElementById("input-container");
+const multipleContainer = document.getElementById("multiple-container");
+
 const questionEl = document.getElementById("question");
 const counterEl = document.getElementById("counter");
 const resultEl = document.getElementById("result");
 const answerInput = document.getElementById("answer-input");
-const choicesDiv = document.getElementById("choices");
 const choice1 = document.getElementById("choice1");
 const choice2 = document.getElementById("choice2");
 const choice3 = document.getElementById("choice3");
@@ -31,6 +22,15 @@ const finalScoreEl = document.getElementById("final-score");
 // Sounds
 const correctSound = document.getElementById("correct-sound");
 const wrongSound = document.getElementById("wrong-sound");
+
+// Switch UI based on mode
+if (mode === "multiple") {
+    inputContainer.style.display = "none";
+    multipleContainer.style.display = "block";
+} else {
+    inputContainer.style.display = "block";
+    multipleContainer.style.display = "none";
+}
 
 let currentQuestion = 1;
 let score = 0;
@@ -58,9 +58,7 @@ function generateQuestion() {
 
     counterEl.innerText = `Question ${currentQuestion} / 20`;
 
-    let num1, num2;
-    [num1, num2] = generateNumbers();
-
+    let [num1, num2] = generateNumbers();
     let opSymbol = "+";
 
     if (operation === "addition") {
@@ -116,15 +114,13 @@ function generateQuestion() {
 
 // Multiple choice setup
 function setupMultipleChoice() {
-    answerInput.classList.add("hidden");
-    choicesDiv.classList.remove("hidden");
-    submitBtn.classList.add("hidden");
+    answerInput.style.display = "none";
+    submitBtn.style.display = "none";
 
     const wrong1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
     const wrong2 = correctAnswer - (Math.floor(Math.random() * 5) + 1);
 
     let answers = [correctAnswer, wrong1, wrong2];
-
     answers.sort(() => Math.random() - 0.5);
 
     choice1.innerText = answers[0];
@@ -182,7 +178,9 @@ function nextQuestion() {
 function endGame() {
     questionEl.classList.add("hidden");
     answerInput.classList.add("hidden");
-    choicesDiv.classList.add("hidden");
+    choice1.classList.add("hidden");
+    choice2.classList.add("hidden");
+    choice3.classList.add("hidden");
     submitBtn.classList.add("hidden");
     counterEl.classList.add("hidden");
     resultEl.classList.add("hidden");
@@ -190,8 +188,6 @@ function endGame() {
     endScreen.classList.remove("hidden");
     finalScoreEl.innerText = `You scored ${score} out of 20!`;
 
-    // If this game was started from Weekly Challenge
-    const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("weekly") === "1") {
         setTimeout(() => {
             location.href = "weekly.html?weeklyComplete=1";
