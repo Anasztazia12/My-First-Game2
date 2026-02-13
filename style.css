@@ -250,3 +250,10 @@ select:focus {
     margin: 10px auto;
     display: block;
 }
+#input-container {
+    display: block;
+}
+
+#multiple-container {
+    display: none;
+}

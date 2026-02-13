@@ -1,3 +1,14 @@
+const inputContainer = document.getElementById("input-container");
+const multipleContainer = document.getElementById("multiple-container");
+//Switch UI based on mode
+if (mode === "multiple") {
+    inputContainer.style.display = "none";
+    multipleContainer.style.display = "block";
+} else {
+    inputContainer.style.display = "block";
+    multipleContainer.style.display = "none";
+}
+
 // Read URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const mode = urlParams.get("mode");      // input or multiple
