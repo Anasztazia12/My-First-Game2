@@ -1,11 +1,11 @@
-// Read URL parameters
+// URL paraméterek
 const urlParams = new URLSearchParams(window.location.search);
-const mode = urlParams.get("mode");        // input or multiple
-const op = urlParams.get("op");            // addition, subtraction, etc.
+const mode = urlParams.get("mode");        // input vagy multiple
+const op = urlParams.get("op");            // addition, subtraction, multiplication, division, mixed
 const diff = urlParams.get("diff");        // easy, medium, hard
 const isWeekly = urlParams.get("weekly") === "1";
 
-// DOM elements
+// DOM elemek
 const questionEl = document.getElementById("question");
 const counterEl = document.getElementById("counter");
 const inputContainer = document.getElementById("input-container");
@@ -14,34 +14,34 @@ const answerInput = document.getElementById("answer-input");
 const choiceButtons = document.querySelectorAll(".choice-btn");
 const okBtn = document.getElementById("ok-btn");
 
-// Sounds
+// Hangok
 const correctSound = document.getElementById("correct-sound");
 const wrongSound = document.getElementById("wrong-sound");
 
-// Game state
-let currentQuestion = 0;
+// Állapot
+let currentQuestion = 0;  // Kezdő kérdés
 let correctAnswer = 0;
 
-// Difficulty ranges
+// Nehézségi szintek
 const ranges = {
     easy: 20,
     medium: 60,
     hard: 150
 };
 
-// Generate random number
+// Véletlenszám generálása
 function rand(max) {
     return Math.floor(Math.random() * max) + 1;
 }
 
-// Generate new question
+// Új kérdés generálása
 function generateQuestion() {
-    currentQuestion++;
-    if (currentQuestion > 20) {
+    if (currentQuestion >= 20) {
         showEndScreen();
         return;
     }
 
+    currentQuestion++;
     counterEl.innerText = `Question ${currentQuestion} / 20`;
 
     let a = rand(ranges[diff]);
@@ -68,32 +68,17 @@ function generateQuestion() {
         case "mixed":
             const ops = ["+", "-", "×", "÷"];
             const pick = ops[Math.floor(Math.random() * 4)];
-            if (pick === "+") {
-                correctAnswer = a + b;
-                questionEl.innerText = `${a} + ${b} = ?`;
-            }
-            if (pick === "-") {
-                correctAnswer = a - b;
-                questionEl.innerText = `${a} - ${b} = ?`;
-            }
-            if (pick === "×") {
-                correctAnswer = a * b;
-                questionEl.innerText = `${a} × ${b} = ?`;
-            }
-            if (pick === "÷") {
-                correctAnswer = a;
-                let product2 = a * b;
-                questionEl.innerText = `${product2} ÷ ${b} = ?`;
-            }
+            if (pick === "+") { correctAnswer = a + b; questionEl.innerText = `${a} + ${b} = ?`; }
+            if (pick === "-") { correctAnswer = a - b; questionEl.innerText = `${a} - ${b} = ?`; }
+            if (pick === "×") { correctAnswer = a * b; questionEl.innerText = `${a} × ${b} = ?`; }
+            if (pick === "÷") { correctAnswer = a; let product2 = a * b; questionEl.innerText = `${product2} ÷ ${b} = ?`; }
             break;
     }
 
-    if (mode === "multiple") {
-        setupMultipleChoice();
-    }
+    if (mode === "multiple") setupMultipleChoice();
 }
 
-// Setup multiple choice answers
+// Multiple choice beállítása
 function setupMultipleChoice() {
     let answers = [correctAnswer];
     while (answers.length < 3) {
@@ -108,27 +93,27 @@ function setupMultipleChoice() {
     });
 }
 
-// Check answer
+// Ellenőrzés
 function checkAnswer(value) {
-    if (mode === "input") {
-        value = Number(answerInput.value);
-    }
+    if (mode === "input") value = Number(answerInput.value);
 
-    if (value === correctAnswer) {
-        correctSound.play();
-    } else {
-        wrongSound.play();
-    }
+    if (value === correctAnswer) correctSound.play();
+    else wrongSound.play();
 
     answerInput.value = "";
 
-    // Weekly progress increment
+    // Weekly progress növelése
     if (isWeekly) incrementWeeklyProgress();
 
-    generateQuestion();
+    // Következő kérdés vagy vége
+    if (currentQuestion < 20) {
+        generateQuestion();
+    } else {
+        showEndScreen();
+    }
 }
 
-// Weekly progress functions
+// Weekly progress funkciók
 function incrementWeeklyProgress() {
     let weeklyCount = Number(localStorage.getItem("weeklyCurrent") || 0);
     if (weeklyCount < 5) {
@@ -165,7 +150,7 @@ function showWeeklyTrophy() {
     for (let i = 0; i < 50; i++) createConfetti();
 }
 
-// Confetti
+// Konfetti
 function createConfetti() {
     const confetti = document.createElement("div");
     confetti.classList.add("confetti");
@@ -179,7 +164,7 @@ function createConfetti() {
     setTimeout(()=>confetti.remove(),4000);
 }
 
-// End screen for daily 20 questions
+// End screen
 function showEndScreen() {
     document.querySelector(".game-container").innerHTML = `
         <h2>You finished all 20 questions!</h2>
@@ -188,12 +173,12 @@ function showEndScreen() {
     `;
 }
 
-// OK button
+// OK gomb input módhoz
 okBtn.onclick = () => {
     if (mode === "input") checkAnswer(Number(answerInput.value));
 };
 
-// INITIAL DISPLAY
+// Kezdeti megjelenítés
 if (mode === "multiple") {
     inputContainer.style.display = "none";
     multipleContainer.style.display = "block";
@@ -202,4 +187,5 @@ if (mode === "multiple") {
     multipleContainer.style.display = "none";
 }
 
+// Első kérdés
 generateQuestion();
