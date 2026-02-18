@@ -11,14 +11,14 @@
 
     <div class="game-container">
 
-        <h1>Game Settings</h1>
+        <h1>Maths Challenge</h1>
         <p class="subtitle">Choose how you want to play</p>
 
         <!-- GAME MODE -->
         <div class="section">
             <h2>Game Mode</h2>
             <select id="game-mode">
-                <option value="input">Input Answer</option>
+                <option value="input">Type Answer</option>
                 <option value="multiple">Multiple Choice</option>
             </select>
         </div>
@@ -39,9 +39,9 @@
         <div class="section">
             <h2>Difficulty</h2>
             <select id="difficulty">
-                <option value="easy">Easy (1–20)</option>
-                <option value="medium">Medium (1–60)</option>
-                <option value="hard">Hard (1–150)</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
             </select>
         </div>
 
@@ -63,7 +63,7 @@
             const op = document.getElementById("operation").value;
             const diff = document.getElementById("difficulty").value;
 
-            // átirányítás a játék oldalra paraméterekkel
+            // Átirányítás a play.html-re a paraméterekkel
             const url = `play.html?mode=${mode}&op=${op}&diff=${diff}`;
             location.href = url;
         }

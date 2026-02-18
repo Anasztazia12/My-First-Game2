@@ -6,7 +6,6 @@
     <title>Weekly Challenge</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body class="bg-weekly">
 
     <div class="game-container">
@@ -14,6 +13,7 @@
         <h1>Weekly Challenge</h1>
         <p class="subtitle">Complete 5 daily tasks to earn the trophy!</p>
 
+        <!-- Weekly progress -->
         <p id="weekly-progress" class="subtitle">Weekly progress: 0/5</p>
 
         <div id="pentagon-container">
@@ -33,23 +33,26 @@
             </svg>
         </div>
 
+        <!-- Game mode selection -->
         <div class="section">
             <h2>Game Mode</h2>
             <select id="weekly-mode">
-                <option value="input">Input Answer</option>
+                <option value="input">Type Answer</option>
                 <option value="multiple">Multiple Choice</option>
             </select>
         </div>
 
+        <!-- Difficulty selection -->
         <div class="section">
             <h2>Difficulty</h2>
             <select id="weekly-difficulty">
-                <option value="easy">Easy (1–20)</option>
-                <option value="medium">Medium (1–60)</option>
-                <option value="hard">Hard (1–150)</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
             </select>
         </div>
 
+        <!-- Operation selection -->
         <div class="section">
             <h2>Operation</h2>
             <select id="weekly-operation">
@@ -69,6 +72,7 @@
             ⬅ Back to Home
         </button>
 
+        <!-- Trophy popup -->
         <div id="trophy-popup" class="hidden">
             <h2>Congratulations!</h2>
             <p>You completed all 5 weekly tasks!</p>

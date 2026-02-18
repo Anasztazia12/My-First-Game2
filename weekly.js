@@ -8,7 +8,7 @@ const progressText = document.getElementById("weekly-progress");
 const pentagonProgress = document.getElementById("pentagon-progress");
 const trophyPopup = document.getElementById("trophy-popup");
 
-// Pentagon points (6 points to close shape)
+// Pentagon points (5 points + back to start)
 const pentagonPoints = [
     [100, 20],
     [180, 75],
@@ -18,14 +18,14 @@ const pentagonPoints = [
     [100, 20]
 ];
 
-// Update UI
+// Update weekly UI
 function updateProgressUI() {
     const completed = weeklyProgress.completed;
 
-    // Update text
+    // Update progress text
     progressText.innerText = `Weekly progress: ${completed}/5`;
 
-    // Draw green progress lines
+    // Update pentagon progress line
     if (completed === 0) {
         pentagonProgress.setAttribute("points", "");
     } else {
@@ -36,13 +36,13 @@ function updateProgressUI() {
         pentagonProgress.setAttribute("points", points.trim());
     }
 
-    // Trophy only at 5/5
-    if (completed === 5) {
+    // Show trophy if all 5 tasks done
+    if (completed >= 5) {
         showTrophy();
     }
 }
 
-// Show trophy + confetti
+// Show trophy + confetti animation
 function showTrophy() {
     trophyPopup.classList.remove("hidden");
 
@@ -81,29 +81,33 @@ function startWeeklyTask() {
     const diff = document.getElementById("weekly-difficulty").value;
     const op = document.getElementById("weekly-operation").value;
 
+    // Mark that user is doing a weekly task
     localStorage.setItem("doingWeekly", "1");
 
+    // Redirect to play.html with parameters
     location.href = `play.html?mode=${mode}&op=${op}&diff=${diff}&weekly=1`;
 }
 
-// Handle return from play.html
+// Handle return from play.html after completing weekly task
 window.addEventListener("load", () => {
     const urlParams = new URLSearchParams(window.location.search);
 
     if (urlParams.get("weeklyComplete") === "1") {
         if (localStorage.getItem("doingWeekly") === "1") {
-
+            // Increase progress if less than 5
             if (weeklyProgress.completed < 5) {
                 weeklyProgress.completed++;
             }
 
+            // Save updated progress
             localStorage.setItem("weeklyProgress", JSON.stringify(weeklyProgress));
             localStorage.removeItem("doingWeekly");
 
+            // Update UI
             updateProgressUI();
         }
     }
 });
 
-// INITIAL LOAD
+// INITIAL UI update
 updateProgressUI();

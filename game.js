@@ -1,11 +1,8 @@
-
-// Read URL parameters
 const urlParams = new URLSearchParams(window.location.search);
-const mode = urlParams.get("mode");        // input or multiple
-const op = urlParams.get("op");            // addition, subtraction, etc.
-const diff = urlParams.get("diff");        // easy, medium, hard
+const mode = urlParams.get("mode");
+const op = urlParams.get("op");
+const diff = urlParams.get("diff");
 
-// DOM elements
 const questionEl = document.getElementById("question");
 const counterEl = document.getElementById("counter");
 
@@ -16,29 +13,20 @@ const answerInput = document.getElementById("answer-input");
 const choiceButtons = document.querySelectorAll(".choice-btn");
 
 const okBtn = document.getElementById("ok-btn");
-const endScreen = document.getElementById("end-screen");
 
-// Sounds
-const correctSound = document.getElementById("correct-sound");
-const wrongSound = document.getElementById("wrong-sound");
-
-// Game state
 let currentQuestion = 0;
 let correctAnswer = 0;
 
-// Difficulty ranges
 const ranges = {
-    easy: 20,
-    medium: 60,
-    hard: 150
+    easy: 100,
+    medium: 500,
+    hard: 2000
 };
 
-// Generate a random number
-function rand(max) {
-    return Math.floor(Math.random() * max) + 1;
+function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Generate a new question
 function generateQuestion() {
     currentQuestion++;
 
@@ -49,63 +37,86 @@ function generateQuestion() {
 
     counterEl.innerText = `Question ${currentQuestion} / 20`;
 
-    let a = rand(ranges[diff]);
-    let b = rand(ranges[diff]);
+    let a, b, product;
 
     switch (op) {
         case "addition":
+            a = rand(10, ranges[diff]);
+            b = rand(10, ranges[diff]);
             correctAnswer = a + b;
             questionEl.innerText = `${a} + ${b} = ?`;
             break;
+
         case "subtraction":
+            a = rand(10, ranges[diff]);
+            b = rand(10, a);
             correctAnswer = a - b;
             questionEl.innerText = `${a} - ${b} = ?`;
             break;
+
         case "multiplication":
+            a = rand(1, 12);
+            b = rand(1, 12);
             correctAnswer = a * b;
             questionEl.innerText = `${a} × ${b} = ?`;
             break;
+
         case "division":
-            correctAnswer = a;
-            let product = a * b;
+            b = rand(1, 12);
+            correctAnswer = rand(1, 12);
+            product = correctAnswer * b;
             questionEl.innerText = `${product} ÷ ${b} = ?`;
             break;
+
         case "mixed":
             const ops = ["+", "-", "×", "÷"];
-            const pick = ops[Math.floor(Math.random() * 4)];
+            const pick = ops[Math.floor(Math.random() * ops.length)];
 
             if (pick === "+") {
+                a = rand(10, ranges[diff]);
+                b = rand(10, ranges[diff]);
                 correctAnswer = a + b;
                 questionEl.innerText = `${a} + ${b} = ?`;
             }
+
             if (pick === "-") {
+                a = rand(10, ranges[diff]);
+                b = rand(10, a);
                 correctAnswer = a - b;
                 questionEl.innerText = `${a} - ${b} = ?`;
             }
+
             if (pick === "×") {
+                a = rand(1, 12);
+                b = rand(1, 12);
                 correctAnswer = a * b;
                 questionEl.innerText = `${a} × ${b} = ?`;
             }
+
             if (pick === "÷") {
-                correctAnswer = a;
-                let product2 = a * b;
-                questionEl.innerText = `${product2} ÷ ${b} = ?`;
+                b = rand(1, 12);
+                correctAnswer = rand(1, 12);
+                product = correctAnswer * b;
+                questionEl.innerText = `${product} ÷ ${b} = ?`;
             }
             break;
     }
 
-    if (mode === "multiple") {
-        setupMultipleChoice();
-    }
+    if (mode === "multiple") setupMultipleChoice();
 }
 
-// Setup multiple choice answers
 function setupMultipleChoice() {
     let answers = [correctAnswer];
 
     while (answers.length < 3) {
-        let wrong = correctAnswer + Math.floor(Math.random() * 10) - 5;
-        if (wrong !== correctAnswer && wrong >= 0) answers.push(wrong);
+        let offset = rand(5, 30);
+        let wrong = Math.random() < 0.5
+            ? correctAnswer - offset
+            : correctAnswer + offset;
+
+        if (wrong > 0 && !answers.includes(wrong)) {
+            answers.push(wrong);
+        }
     }
 
     answers.sort(() => Math.random() - 0.5);
@@ -116,41 +127,30 @@ function setupMultipleChoice() {
     });
 }
 
-// Check answer
 function checkAnswer(value) {
     if (mode === "input") {
         value = Number(answerInput.value);
     }
 
-    if (value === correctAnswer) {
-        correctSound.play();
-    } else {
-        wrongSound.play();
-    }
-
     answerInput.value = "";
-
     generateQuestion();
 }
 
-// Show end screen
 function showEndScreen() {
     document.querySelector(".game-container").innerHTML = `
-        <h2>Done!</h2>
-        <p>You finished all 20 questions!</p>
-        <button class="menu-btn" onclick="location.href='game.html'">Play Again</button>
-        <button class="menu-btn" onclick="location.href='index.html'">Back to Home</button>
+        <h2>🎉 Kész vagy!</h2>
+        <p>Megcsináltad a 20 kérdést!</p>
+        <button class="menu-btn" onclick="location.href='game.html'">Új játék</button>
+        <button class="menu-btn" onclick="location.href='index.html'">Főmenü</button>
     `;
 }
 
-// OK button for input mode
 okBtn.onclick = () => {
     if (mode === "input") {
         checkAnswer(Number(answerInput.value));
     }
 };
 
-// INITIAL SETUP
 if (mode === "multiple") {
     inputContainer.style.display = "none";
     multipleContainer.style.display = "block";
